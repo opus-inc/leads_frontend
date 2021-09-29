@@ -1,10 +1,10 @@
 import React from "react";
-import { HashRouter, Switch, Route } from "react-router-dom";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Routes from "./routes";
 
 const Router = () => {
   return (
-    <HashRouter>
+    <BrowserRouter basename="/738857258e">
       <Switch>
         {Routes.map((item, index) => (
           <Route key={index} path={item.path}>
@@ -12,7 +12,7 @@ const Router = () => {
           </Route>
         ))}
       </Switch>
-    </HashRouter>
+    </BrowserRouter>
   );
 };
 

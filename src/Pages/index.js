@@ -1,0 +1,9 @@
+export { default as CadAcoes } from "./cadastro/acoes/CadAcoes";
+export { default as CadLeadAcoes } from "./cadastro/leads/CadLeadAcoes";
+export { default as CadLeadStand } from "./cadastro/leads/CadLeadStand";
+export { default as CadLeadCliente } from "./cadastro/leads/CadLeadCliente";
+export { default as ConLeadRecepcionista } from "./consulta/leads/ConLeadRecepcionista";
+export { default as ConEmpreendimentos } from "./consulta/empreendimentos/ConEmpreendimentos";
+export { default as ConAcao } from "./consulta/acoes/ConAcoes";
+export { default as Recepcionista } from "./Recepcionista";
+export { default as Acao } from "./Acao";
