@@ -1,0 +1,16 @@
+version: "3"
+services:
+  nextjs:
+    restart: always
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/app
+      - nodemodules:/app/node_modules
+      - build:/app/.next
+    ports:
+      - "3000:3000"
+volumes:
+  build: {}
+  nodemodules: {}

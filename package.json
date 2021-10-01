@@ -1,0 +1,21 @@
+{
+  "name": "leads_web",
+  "version": "1.0.0",
+  "dependencies": {
+    "@material-ui/core": "latest",
+    "apisauce": "^2.1.1",
+    "next": "latest",
+    "prop-types": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "styled-components": "latest"
+  },
+  "devDependencies": {
+    "babel-plugin-styled-components": "latest"
+  },
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start"
+  }
+}
