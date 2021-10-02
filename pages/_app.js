@@ -26,6 +26,11 @@ class MyApp extends App {
             name="viewport"
             content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
           />
+          <script
+            type="text/javascript"
+            async
+            src="https://d335luupugsy2.cloudfront.net/js/loader-scripts/52452b8d-039d-4c5b-8e3a-db439984e245-loader.js"
+          ></script>
         </Head>
         <ThemeProvider theme={theme}>
           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
