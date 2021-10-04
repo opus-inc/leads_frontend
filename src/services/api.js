@@ -10,4 +10,9 @@ const facilitaApi = create({
   headers: { Accept: "*/*" },
 });
 
-export { localApi, facilitaApi };
+const flaskApi = create({
+  baseURL: "http://app02.opus.inc/leads/api",
+  headers: { Accept: "*/*" },
+});
+
+export { localApi, facilitaApi, flaskApi };

@@ -1,9 +1,11 @@
+import { useState } from "react";
 import styled from "styled-components";
-import Typography from "@material-ui/core/Typography";
+import { Typography, Button } from "@material-ui/core";
 import Head from "next/head";
 import {
   RecepcionistaCadastro,
   RecepcionistaConsulta,
+  RecepcionistaBusca,
 } from "../../src/components/index";
 import translateLocal from "../../src/helpers/translateLocal";
 import { localApi } from "../../src/services/api";
@@ -11,6 +13,8 @@ import { useRouter } from "next/router";
 
 const Recepcionista = (props) => {
   const router = useRouter();
+  const [consultar, setConsultar] = useState(false);
+  const [leads, setLeads] = useState(null);
   const { recepcionista } = router.query;
   return (
     <>
@@ -25,8 +29,8 @@ const Recepcionista = (props) => {
         align="left"
         style={{
           position: "absolute",
-          marginTop: "100px",
-          marginLeft: "100px",
+          marginTop: "65px",
+          marginLeft: "10px",
         }}
       >
         {translateLocal[recepcionista]}
@@ -38,20 +42,44 @@ const Recepcionista = (props) => {
           gutterBottom
           color="#fff"
           align="center"
-          style={{ marginBottom: "80px" }}
+          style={{ margin: "100px 0 80px 0" }}
         >
           CLIENTES STAND
         </Typography>
-        <GridWrapper>
+        <GridWrapper consultar={consultar} leads={leads ? true : false}>
           <RecepcionistaCadastro
             local={recepcionista}
             empreendimentos={props.empreendimentos}
           />
-          <RecepcionistaConsulta
-            local={recepcionista}
-            empreendimentos={props.empreendimentos}
-            leads={props.leads}
-          />
+          <GridWrapper
+            style={{ gridTemplateColumns: "1fr", gridTemplateRows: "1fr 10fr" }}
+          >
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={(_) => {
+                setConsultar(!consultar);
+                setLeads(null);
+              }}
+            >
+              {!consultar && "Consultar Cliente"}
+              {consultar && "Leads Aguardando Envio"}
+            </Button>
+            {!consultar && (
+              <RecepcionistaConsulta
+                local={recepcionista}
+                empreendimentos={props.empreendimentos}
+                leads={props.leads}
+              />
+            )}
+            {consultar && (
+              <RecepcionistaBusca
+                local={recepcionista}
+                leads={leads}
+                setLeads={setLeads}
+              />
+            )}
+          </GridWrapper>
         </GridWrapper>
       </Wrapper>
     </>
@@ -108,7 +136,7 @@ export async function getServerSideProps({ query: { recepcionista } }) {
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
   align-items: center;
   justify-content: center;
 `;
@@ -118,7 +146,20 @@ const GridWrapper = styled.div`
 
   @media screen and (max-width: 600px) {
     grid-template-columns: 1fr;
+    width: 90vw;
   }
+
+  ${({ consultar }) =>
+    consultar &&
+    `
+      grid-template-columns: 2fr 1fr;
+  `}
+
+  ${({ leads }) =>
+    leads &&
+    `
+      grid-template-columns: 1fr 2fr;
+  `}
 `;
 
 export default Recepcionista;
