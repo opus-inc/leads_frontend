@@ -4,8 +4,6 @@ import styled from "styled-components";
 import Typography from "@material-ui/core/Typography";
 import { FormComponent } from "../../src/components/index";
 import { facilitaApi, localApi } from "../../src/services/api";
-//import useWindowDimensions from "../../src/helpers/hooks/useWindowDimensions";
-//import getWidth from "../../src/helpers/getWidth";
 import Head from "next/head";
 import { useRouter } from "next/router";
 
@@ -13,6 +11,7 @@ const CadLeadAcoes = (props) => {
   const router = useRouter();
   const { acao } = router.query;
   const [campos, setCampos] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     nome: "",
     email: "",
@@ -22,8 +21,6 @@ const CadLeadAcoes = (props) => {
   });
   const produtos = props.empreendimentos;
   const acoes = props.acoes;
-
-  //const { width } = useWindowDimensions();
 
   useEffect(() => {
     const optionsEmpreendimentos = props.empreendimentos.map((item) => ({
@@ -77,6 +74,7 @@ const CadLeadAcoes = (props) => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     let temp = { ...form };
     temp.produto = produtos.find(
       (item) => temp.empreendimento == item.id_facilita
@@ -97,6 +95,7 @@ const CadLeadAcoes = (props) => {
     );
     if (!baseLocalLeadOk) {
       alert(originalError.message);
+      setLoading(false);
       return;
     }
 
@@ -122,9 +121,11 @@ const CadLeadAcoes = (props) => {
     });
     if (!ok) {
       alert(message);
+      setLoading(false);
       return;
     }
     alert(data?.message);
+    setLoading(false);
   };
 
   return (
@@ -142,6 +143,7 @@ const CadLeadAcoes = (props) => {
         state={form}
         setState={setForm}
         buttonText="Cadastrar"
+        loading={loading}
       />
     </Wrapper>
   );

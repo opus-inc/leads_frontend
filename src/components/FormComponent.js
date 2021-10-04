@@ -6,6 +6,7 @@ import {
   MenuItem,
   Select,
   Button,
+  CircularProgress,
 } from "@material-ui/core";
 import styled, { useTheme } from "styled-components";
 
@@ -16,6 +17,7 @@ const FormComponent = ({
   state,
   setState,
   buttonText,
+  loading,
 }) => {
   const theme = useTheme();
   console.log(theme);
@@ -82,8 +84,15 @@ const FormComponent = ({
           </ItemWrapper>
         )
       )}
-      <Button type="submit" variant="contained" value="Ativar" color="primary">
-        {buttonText}
+      <Button
+        type="submit"
+        variant="contained"
+        value="Ativar"
+        color="primary"
+        disabled={loading}
+      >
+        {loading && <CircularProgress size="22px" color="white" />}
+        {!loading && buttonText}
       </Button>
     </Form>
   );

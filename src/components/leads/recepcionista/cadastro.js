@@ -8,6 +8,7 @@ import translateLocal from "../../../helpers/translateLocal";
 
 const CadLeadStand = (props) => {
   const [campos, setCampos] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [empreendimentos, setEmpreendimentos] = useState(props.empreendimentos);
   const [form, setForm] = useState({
     nome: "",
@@ -15,20 +16,8 @@ const CadLeadStand = (props) => {
     telefone: "",
     empreendimento: "",
   });
-  //const { width } = useWindowDimensions();
 
   useEffect(async () => {
-    //const {
-    //  data: dataEmpreendimentos,
-    //  ok: okEmpreendimentos,
-    //  originalError: originalErrorEmpreendimentos,
-    //} = await localApi.get("/empreendimentos", {
-    //  status: "Ativo",
-    //});
-    //if (!okEmpreendimentos) {
-    //  alert(originalErrorEmpreendimentos.message);
-    //  return;
-    //}
     const optionsEmpreendimentos = props.empreendimentos.map((item) => ({
       name: item.nome,
       value: item.id_facilita,
@@ -70,6 +59,7 @@ const CadLeadStand = (props) => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     const { form_id, id } = empreendimentos.find(
       (item) => item.id_facilita == form.empreendimento
@@ -77,6 +67,7 @@ const CadLeadStand = (props) => {
 
     if (!form_id) {
       alert("Este empreendimento não possui um ID de fila do facilita.");
+      setLoading(false);
       return;
     }
 
@@ -94,6 +85,7 @@ const CadLeadStand = (props) => {
     );
     if (!baseLocalLeadOk) {
       alert(originalError.message);
+      setLoading(false);
       return;
     }
     temp = { ...form };
@@ -108,6 +100,7 @@ const CadLeadStand = (props) => {
     });
     if (!response.ok) {
       alert("Erro ao efetuar o cadastro.\nTente novamente.");
+      setLoading(false);
       return;
     }
     alert("Cadastro realizado com sucesso.");
@@ -117,6 +110,7 @@ const CadLeadStand = (props) => {
       telefone: "",
       empreendimento: "",
     });
+    setLoading(false);
   };
 
   return (
@@ -145,6 +139,7 @@ const CadLeadStand = (props) => {
         state={form}
         setState={setForm}
         buttonText="Cadastrar"
+        loading={loading}
       />
     </Wrapper>
   );
