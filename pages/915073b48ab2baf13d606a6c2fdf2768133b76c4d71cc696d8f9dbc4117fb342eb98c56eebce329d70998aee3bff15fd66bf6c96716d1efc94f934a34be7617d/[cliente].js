@@ -73,6 +73,7 @@ const CadLeadStand = () => {
         REALIZE SEU CADASTRO
       </Typography>
       <FormComponent
+        formId="form-cliente  -cadastro"
         fields={campos}
         onSubmit={onSubmit}
         width={50}

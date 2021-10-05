@@ -130,6 +130,7 @@ const ConLeadRecepcionista = (props) => {
         AGUARDANDO ENVIO
       </Typography>
       <form
+        id="form-recepcionista-liberar"
         onSubmit={onSubmitEdit}
         style={{ width: "100%", textAlignLast: "center" }}
       >

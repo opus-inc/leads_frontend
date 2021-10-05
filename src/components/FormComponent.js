@@ -18,12 +18,13 @@ const FormComponent = ({
   setState,
   buttonText,
   loading,
+  formId,
 }) => {
   const theme = useTheme();
   console.log(theme);
   return (
     <Form
-      id="form"
+      id={formId || "form"}
       onSubmit={onSubmit}
       style={{
         width: `${width}%`,

@@ -137,6 +137,7 @@ const CadLeadAcoes = (props) => {
         CADASTRO DE LEADS DE AÇÕES
       </Typography>
       <FormComponent
+        formId="form-lead-acao"
         fields={campos}
         onSubmit={onSubmit}
         width={100}

@@ -86,6 +86,7 @@ const CadAcoes = () => {
         CADASTRAR
       </Typography>
       <FormComponent
+        formId="form-acao-cadastro"
         fields={campos}
         onSubmit={onSubmit}
         width={95}

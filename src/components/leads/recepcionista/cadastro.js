@@ -132,6 +132,7 @@ const CadLeadStand = (props) => {
         CADASTRAR
       </Typography>
       <FormComponent
+        formId="form-recepcionista-cadastro"
         fields={campos}
         onSubmit={onSubmit}
         //width={getWidth(width)}
