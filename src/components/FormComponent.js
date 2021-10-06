@@ -57,7 +57,7 @@ const FormComponent = ({
                   </MenuItem>
                   {options &&
                     options.map(({ value, name }) => (
-                      <MenuItem key={name} value={value}>
+                      <MenuItem key={name} id={name} name={name} value={value}>
                         {name}
                       </MenuItem>
                     ))}
