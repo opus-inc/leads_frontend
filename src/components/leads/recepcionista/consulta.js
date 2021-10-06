@@ -103,12 +103,12 @@ const ConLeadRecepcionista = (props) => {
         origem: "Cliente",
       }));
     temp.forEach(async (item) => {
-      const {
-        ok: facilitaOk,
-        originalError: { message },
-      } = await facilitaApi.post("/trackerform", item);
+      const { ok: facilitaOk, originalError } = await facilitaApi.post(
+        "/trackerform",
+        item
+      );
       if (!facilitaOk) {
-        alert(message);
+        alert(originalError?.message);
         return;
       }
     });
@@ -134,7 +134,7 @@ const ConLeadRecepcionista = (props) => {
         onSubmit={onSubmitEdit}
         style={{ width: "100%", textAlignLast: "center" }}
       >
-        {leads.length > 0 && (
+        {leads && leads.length > 0 && (
           <Table>
             <TableHead>
               <TableRow>
@@ -155,9 +155,9 @@ const ConLeadRecepcionista = (props) => {
                     key={id}
                     style={{ backgroundColor: "rgb(254, 254, 254, 0.9)" }}
                   >
-                    <TableCell>{nome}</TableCell>
-                    <TableCell>{email}</TableCell>
-                    <TableCell>{telefone}</TableCell>
+                    <TableCell name="nome">{nome}</TableCell>
+                    <TableCell name="email">{email}</TableCell>
+                    <TableCell name="telefone">{telefone}</TableCell>
                     <TableCell>
                       <InputLabel id="select-produto-label">
                         Produtos
@@ -175,7 +175,7 @@ const ConLeadRecepcionista = (props) => {
                         {produtos &&
                           produtos.map((item) => (
                             <MenuItem
-                              key={item._id}
+                              key={item.nome}
                               value={JSON.stringify(item)}
                             >
                               {item.nome}

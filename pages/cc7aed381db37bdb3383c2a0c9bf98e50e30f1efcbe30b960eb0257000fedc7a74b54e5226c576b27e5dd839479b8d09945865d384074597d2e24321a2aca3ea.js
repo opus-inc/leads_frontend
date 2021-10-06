@@ -1,9 +1,12 @@
+/*
+ *  Leads Ação
+ */
 /* eslint-disable no-unreachable */
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import Typography from "@material-ui/core/Typography";
-import { FormComponent } from "../../src/components/index";
-import { facilitaApi, localApi } from "../../src/services/api";
+import { FormComponent } from "../src/components/index";
+import { facilitaApi, localApi } from "../src/services/api";
 import Head from "next/head";
 import { useRouter } from "next/router";
 
@@ -89,12 +92,12 @@ const CadLeadAcoes = (props) => {
     };
     delete temp.empreendimento;
 
-    const { ok: baseLocalLeadOk, originalError } = await localApi.post(
+    const { ok: baseLocalLeadOk, originalErrorLocalBase } = await localApi.post(
       "/leads",
       temp
     );
     if (!baseLocalLeadOk) {
-      alert(originalError.message);
+      alert(originalErrorLocalBase?.message);
       setLoading(false);
       return;
     }
@@ -108,11 +111,7 @@ const CadLeadAcoes = (props) => {
 
     temp = { ...form, acao: acao.equipe };
     temp.facilita_custom_selector = translateFormIdAcoes[temp.acao];
-    const {
-      data,
-      ok,
-      originalError: { message },
-    } = await facilitaApi.post("/trackerform", {
+    const { data, ok, originalError } = await facilitaApi.post("/trackerform", {
       ...temp,
       facilita_custom_page: "Formulário de Leads",
       facilita_custom_url: "http://app.opus.inc",
@@ -120,11 +119,11 @@ const CadLeadAcoes = (props) => {
       origem: "Ações",
     });
     if (!ok) {
-      alert(message);
+      alert(originalError?.message);
       setLoading(false);
       return;
     }
-    alert(data?.message);
+    alert("Cadastrado com sucesso.");
     setLoading(false);
   };
 
@@ -140,7 +139,7 @@ const CadLeadAcoes = (props) => {
         formId="form-lead-acao"
         fields={campos}
         onSubmit={onSubmit}
-        width={100}
+        width={60}
         state={form}
         setState={setForm}
         buttonText="Cadastrar"

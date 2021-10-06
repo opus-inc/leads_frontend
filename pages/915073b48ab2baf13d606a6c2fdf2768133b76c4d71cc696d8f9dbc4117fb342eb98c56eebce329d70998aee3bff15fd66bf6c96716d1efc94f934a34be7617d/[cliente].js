@@ -1,3 +1,4 @@
+import Head from "next/head";
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { FormComponent } from "../../src/components/index";
@@ -64,6 +65,9 @@ const CadLeadStand = () => {
 
   return (
     <Wrapper>
+      <Head>
+        <title>Cadastro Único</title>
+      </Head>
       <Typography
         variant="h5"
         component="div"
