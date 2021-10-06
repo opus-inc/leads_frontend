@@ -12,6 +12,7 @@ import {
   Select,
   InputLabel,
   Typography,
+  TextField,
 } from "@material-ui/core";
 import translateLocal from "../../../helpers/translateLocal";
 
@@ -130,7 +131,6 @@ const ConLeadRecepcionista = (props) => {
         AGUARDANDO ENVIO
       </Typography>
       <form
-        id="form-recepcionista-liberar"
         onSubmit={onSubmitEdit}
         style={{ width: "100%", textAlignLast: "center" }}
       >
@@ -185,6 +185,27 @@ const ConLeadRecepcionista = (props) => {
                           ))}
                       </Select>
                     </TableCell>
+                    <form
+                      id="form-recepcionista-liberar"
+                      style={{ display: "none" }}
+                    >
+                      <TextField id="select-produto" name="nome" value={nome} />
+                      <TextField
+                        id="select-produto"
+                        name="email"
+                        value={email}
+                      />
+                      <TextField
+                        id="select-produto"
+                        name="telefone"
+                        value={telefone}
+                      />
+                      <TextField
+                        id="select-produto"
+                        name="produto"
+                        value={selectedProdutos[index]}
+                      />
+                    </form>
                     <TableCell>{formatDate(createdAt)}</TableCell>
                   </TableRow>
                 )
