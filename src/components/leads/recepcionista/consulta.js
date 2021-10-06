@@ -164,6 +164,7 @@ const ConLeadRecepcionista = (props) => {
                       </InputLabel>
                       <Select
                         id="select-produto"
+                        name="produto"
                         value={selectedProdutos[index]}
                         onChange={(e) => handleFormInput(e.target.value, index)}
                         variant="standard"
@@ -176,6 +177,7 @@ const ConLeadRecepcionista = (props) => {
                           produtos.map((item) => (
                             <MenuItem
                               key={item.nome}
+                              name={item.nome}
                               value={JSON.stringify(item)}
                             >
                               {item.nome}
