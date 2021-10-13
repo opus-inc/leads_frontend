@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { facilitaApi, localApi } from "../../../services/api";
 import {
@@ -19,7 +19,15 @@ import translateLocal from "../../../helpers/translateLocal";
 const ConLeadRecepcionista = (props) => {
   const [leads, setLeads] = useState(props.leads);
   const [selectedProdutos, setSelectedProdutos] = useState([]);
+  const [tempProdutos, setTempProdutos] = useState([]);
   const produtos = props.empreendimentos;
+
+  useEffect(() => {
+    if (selectedProdutos.length > 0) {
+      const temp = selectedProdutos.map(JSON.parse);
+      setTempProdutos(temp);
+    }
+  }, [selectedProdutos]);
 
   const pesquisarNovamente = async () => {
     const temp = translateLocal[props.local];
@@ -59,8 +67,19 @@ const ConLeadRecepcionista = (props) => {
     setSelectedProdutos(temp);
   };
 
+  const onSubmitForms = (e) => {
+    e.preventDefault();
+  };
+
   const onSubmitEdit = async (e) => {
     e.preventDefault();
+
+    const buttons = document.getElementsByClassName("btn-click");
+    console.log(buttons);
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].click();
+    }
+
     if (selectedProdutos.filter(Boolean).length === 0) {
       alert("Pelo menos um registro deve ser atualizado");
       return;
@@ -77,42 +96,42 @@ const ConLeadRecepcionista = (props) => {
         cliente: item.cliente._id,
       }));
 
-    const { ok, originalError } = await localApi.patch("/leads/updateMany", {
-      data: temp,
-    });
+    //const { ok, originalError } = await localApi.patch("/leads/updateMany", {
+    //  data: temp,
+    //});
 
-    if (!ok) {
-      alert(originalError.message);
-      return;
-    }
+    //if (!ok) {
+    //  alert(originalError.message);
+    //  return;
+    //}
 
-    temp = leads.map((lead, index) => ({
-      ...lead,
-      empreendimento: selectedProdutos[index],
-    }));
-    temp = temp
-      .filter((item) => item.empreendimento)
-      .map((item) => ({
-        empreendimento: JSON.parse(item.empreendimento).id_facilita,
-        nome: item.cliente.nome,
-        email: item.cliente.email,
-        telefone: item.cliente.telefone,
-        facilita_custom_selector: JSON.parse(item.empreendimento).form_id,
-        facilita_custom_page: "Formulário de Leads",
-        facilita_custom_url: "http://app.opus.inc",
-        name: "Formulário Lead",
-        origem: "Cliente",
-      }));
-    temp.forEach(async (item) => {
-      const { ok: facilitaOk, originalError } = await facilitaApi.post(
-        "/trackerform",
-        item
-      );
-      if (!facilitaOk) {
-        alert(originalError?.message);
-        return;
-      }
-    });
+    // temp = leads.map((lead, index) => ({
+    //   ...lead,
+    //   empreendimento: selectedProdutos[index],
+    // }));
+    // temp = temp
+    //   .filter((item) => item.empreendimento)
+    //   .map((item) => ({
+    //     empreendimento: JSON.parse(item.empreendimento).id_facilita,
+    //     nome: item.cliente.nome,
+    //     email: item.cliente.email,
+    //     telefone: item.cliente.telefone,
+    //     facilita_custom_selector: JSON.parse(item.empreendimento).form_id,
+    //     facilita_custom_page: "Formulário de Leads",
+    //     facilita_custom_url: "http://app.opus.inc",
+    //     name: "Formulário Lead",
+    //     origem: "Cliente",
+    //   }));
+    //temp.forEach(async (item) => {
+    //  const { ok: facilitaOk, originalError } = await facilitaApi.post(
+    //    "/trackerform",
+    //    item
+    //  );
+    //  if (!facilitaOk) {
+    //    alert(originalError?.message);
+    //    return;
+    //  }
+    //});
 
     alert("Cadastrado com sucesso.");
     setLeads([]);
@@ -185,28 +204,26 @@ const ConLeadRecepcionista = (props) => {
                           ))}
                       </Select>
                     </TableCell>
+                    <TableCell>{formatDate(createdAt)}</TableCell>
                     <form
                       id="form-recepcionista-liberar"
                       style={{ display: "none" }}
+                      onSubmit={onSubmitForms}
                     >
-                      <TextField id="select-produto" name="nome" value={nome} />
+                      <TextField id={nome} name="nome" value={nome} />
+                      <TextField id={email} name="email" value={email} />
                       <TextField
-                        id="select-produto"
-                        name="email"
-                        value={email}
-                      />
-                      <TextField
-                        id="select-produto"
+                        id={telefone}
                         name="telefone"
                         value={telefone}
                       />
                       <TextField
-                        id="select-produto"
+                        id={tempProdutos[index]?.id_facilita}
                         name="produto"
-                        value={selectedProdutos[index]}
+                        value={tempProdutos[index]?.nome}
                       />
+                      <input className="btn-click" type="submit" />
                     </form>
-                    <TableCell>{formatDate(createdAt)}</TableCell>
                   </TableRow>
                 )
               )}
@@ -243,7 +260,7 @@ const ConLeadRecepcionista = (props) => {
           variant="contained"
           value="Ativar"
           style={{
-            margin: "4px 4px 0px 4px",
+            margin: "4px 4px 0px' 4px",
           }}
         >
           Pesquisar novamente
