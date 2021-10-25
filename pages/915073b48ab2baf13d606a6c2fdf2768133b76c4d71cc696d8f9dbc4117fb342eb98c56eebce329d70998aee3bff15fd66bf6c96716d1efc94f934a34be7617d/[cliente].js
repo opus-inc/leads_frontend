@@ -51,13 +51,21 @@ const CadLeadStand = () => {
       local: translateLocal[cliente], //
       tipo: "Cliente",
     });
+    console.log(ok);
     if (!ok) {
       alert(originalError.message);
       setLoading(false);
       return;
     }
+
+    let temp = {
+      ...form,
+      telefone: "55" + form.telefone,
+    };
+    await localApi.post("/leads/salesforce", temp);
+
     alert("Registro criado com sucesso!");
-    const temp = document.createElement("a");
+    temp = document.createElement("a");
     temp.href = "https://opus.inc";
     temp.click();
     setLoading(false);

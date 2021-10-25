@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { FormComponent } from "../../index";
-import { facilitaApi, localApi, salesforceApi } from "../../../services/api";
+import { facilitaApi, localApi } from "../../../services/api";
 import Typography from "@material-ui/core/Typography";
 import translateLocal from "../../../helpers/translateLocal";
 
@@ -98,10 +98,8 @@ const CadLeadStand = (props) => {
       telefone: "55" + form.telefone,
     };
 
-    const salesforceApiReq = salesforceApi.post("/leads", {
-      temp,
-    });
     delete temp.empreendimento;
+    const salesforceApiReq = localApi.post("/leads/salesforce", temp);
 
     await Promise.all([localApiReq, facilitaApiReq, salesforceApiReq])
       .then(() => {
