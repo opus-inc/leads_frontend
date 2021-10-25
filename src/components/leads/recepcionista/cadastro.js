@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { FormComponent } from "../../index";
-import { facilitaApi, localApi } from "../../../services/api";
+import { facilitaApi, localApi, salesforceApi } from "../../../services/api";
 import Typography from "@material-ui/core/Typography";
 import translateLocal from "../../../helpers/translateLocal";
 
@@ -61,7 +61,7 @@ const CadLeadStand = (props) => {
     e.preventDefault();
     setLoading(true);
 
-    const { form_id, id } = empreendimentos.find(
+    const { form_id, id, nome } = empreendimentos.find(
       (item) => item.id_facilita == form.empreendimento
     );
 
@@ -79,18 +79,11 @@ const CadLeadStand = (props) => {
     };
 
     delete temp.empreendimento;
-    const { ok: baseLocalLeadOk, originalError } = await localApi.post(
-      "/leads",
-      temp
-    );
-    if (!baseLocalLeadOk) {
-      alert(originalError.message);
-      setLoading(false);
-      return;
-    }
+    const localApiReq = localApi.post("/leads", temp);
+
     temp = { ...form };
 
-    const response = await facilitaApi.post("/trackerform", {
+    const facilitaApiReq = facilitaApi.post("/trackerform", {
       ...temp,
       facilita_custom_selector: form_id,
       facilita_custom_page: "Formulário de Leads",
@@ -98,12 +91,26 @@ const CadLeadStand = (props) => {
       name: "Formulário Lead",
       origem: "Stand",
     });
-    if (!response.ok) {
-      alert("Erro ao efetuar o cadastro.\nTente novamente.");
-      setLoading(false);
-      return;
-    }
-    alert("Cadastro realizado com sucesso.");
+
+    temp = {
+      ...form,
+      produto: nome,
+      telefone: "55" + form.telefone,
+    };
+
+    const salesforceApiReq = salesforceApi.post("/leads", {
+      temp,
+    });
+    delete temp.empreendimento;
+
+    await Promise.all([localApiReq, facilitaApiReq, salesforceApiReq])
+      .then(() => {
+        alert("Cadastro realizado com sucesso.");
+      })
+      .catch((err) => {
+        alert("Erro ao efetuar o cadastro.\nTente novamente.");
+      });
+
     setForm({
       nome: "",
       email: "",
