@@ -7,8 +7,10 @@ import {
   Select,
   Button,
   CircularProgress,
+  NoSsr,
 } from "@material-ui/core";
 import styled, { useTheme } from "styled-components";
+import MuiPhoneNumber from "./PhoneInput";
 
 const FormComponent = ({
   fields,
@@ -63,6 +65,27 @@ const FormComponent = ({
                     ))}
                 </Select>
               </FormControl>
+            ) : type === "tel" ? (
+              <NoSsr>
+                <MuiPhoneNumber
+                  defaultCountry={"br"}
+                  style={{
+                    marginBottom: 6,
+                  }}
+                  id={name}
+                  type={type}
+                  label={label}
+                  placeholder={placeholder}
+                  required={required}
+                  value={state[name]}
+                  onChange={(e) => {
+                    let temp = { ...state };
+                    temp[name] = e.target.value;
+                    setState(temp);
+                  }}
+                  variant="standard"
+                />
+              </NoSsr>
             ) : (
               <TextField
                 id={name}
