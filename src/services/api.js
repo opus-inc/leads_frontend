@@ -1,7 +1,7 @@
 import { create } from "apisauce";
 
 const localApi = create({
-  baseURL: "http://app02.opus.inc/leads/api/v1",
+  baseURL: "https://app02.opus.inc/leads/api/v1",
   headers: { Accept: "*/*" },
 });
 
@@ -11,7 +11,7 @@ const facilitaApi = create({
 });
 
 const flaskApi = create({
-  baseURL: "http://app02.opus.inc/leads/api",
+  baseURL: "https://app02.opus.inc/leads/api",
   headers: { Accept: "*/*" },
 });
 
