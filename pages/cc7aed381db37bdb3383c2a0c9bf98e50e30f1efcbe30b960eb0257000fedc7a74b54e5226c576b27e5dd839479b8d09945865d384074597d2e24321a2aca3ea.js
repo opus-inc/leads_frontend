@@ -83,6 +83,8 @@ const CadLeadAcoes = (props) => {
       (item) => temp.empreendimento == item.id_facilita
     ).id;
 
+    temp.telefone = temp.telefone.match(/\d+/g).join("");
+
     const acao = acoes.find((item) => temp.acao == item.id);
     temp = {
       ...temp,
@@ -118,6 +120,15 @@ const CadLeadAcoes = (props) => {
       name: "Formulário Lead",
       origem: "Ações",
     });
+
+    await localApi.post("/leads/salesforce", {
+      nome: temp.nome,
+      email: temp.email,
+      telefone: temp.telefone,
+      produto: produtos.find((item) => form.empreendimento == item.id_facilita)
+        .nome,
+    });
+
     if (!ok) {
       alert(originalError?.message);
       setLoading(false);

@@ -80,7 +80,7 @@ const FormComponent = ({
                   value={state[name]}
                   onChange={(e) => {
                     let temp = { ...state };
-                    temp[name] = e.target.value;
+                    temp[name] = e;
                     setState(temp);
                   }}
                   variant="standard"

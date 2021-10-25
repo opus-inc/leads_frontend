@@ -60,6 +60,7 @@ const CadLeadStand = (props) => {
   const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    let telefone = form.telefone.match(/\d+/g).join("");
 
     const { form_id, id, nome } = empreendimentos.find(
       (item) => item.id_facilita == form.empreendimento
@@ -76,6 +77,7 @@ const CadLeadStand = (props) => {
       produto: id,
       local: translateLocal[props.local],
       tipo: "Stand",
+      telefone: telefone,
     };
 
     delete temp.empreendimento;
@@ -90,12 +92,13 @@ const CadLeadStand = (props) => {
       facilita_custom_url: "http://app.opus.inc",
       name: "Formulário Lead",
       origem: "Stand",
+      telefone: telefone,
     });
 
     temp = {
       ...form,
       produto: nome,
-      telefone: "55" + form.telefone,
+      telefone: telefone,
     };
 
     delete temp.empreendimento;

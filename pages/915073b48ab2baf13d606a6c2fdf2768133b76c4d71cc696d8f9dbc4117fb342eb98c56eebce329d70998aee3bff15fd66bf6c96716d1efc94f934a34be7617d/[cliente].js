@@ -45,11 +45,14 @@ const CadLeadStand = () => {
   }, []);
   const onSubmit = async (e) => {
     e.preventDefault();
+    let telefone = form.telefone.match(/\d+/g).join("");
+
     setLoading(true);
     const { ok, originalError } = await localApi.post("/leads", {
       ...form,
       local: translateLocal[cliente], //
       tipo: "Cliente",
+      telefone: telefone,
     });
     console.log(ok);
     if (!ok) {
@@ -60,7 +63,7 @@ const CadLeadStand = () => {
 
     let temp = {
       ...form,
-      telefone: "55" + form.telefone,
+      telefone: telefone,
     };
     await localApi.post("/leads/salesforce", temp);
 
