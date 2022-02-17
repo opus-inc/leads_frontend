@@ -24,12 +24,14 @@ const BuscaLeadRecepcionista = ({ leads, setLeads }) => {
   const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const response = await flaskApi.get("/find-lead-excel", {
+    const response = await flaskApi.get("", {
       email,
     });
 
+    console.log("linha 31 busca.js" + response.data);
+
     if (!response.ok) {
-      alert(response.data.data || response.originalError.message.email);
+      alert(response?.data?.data || response.originalError.message.email);
       setLoading(false);
       setEmail("");
       return;

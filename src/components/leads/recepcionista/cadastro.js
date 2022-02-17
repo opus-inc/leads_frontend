@@ -99,6 +99,7 @@ const CadLeadStand = (props) => {
       ...form,
       produto: nome,
       telefone: telefone,
+      stand: translateLocal[props.local],
     };
 
     delete temp.empreendimento;

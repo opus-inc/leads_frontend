@@ -1,4 +1,4 @@
-FROM node:12-alpine
+FROM node:14.18.0
 
 ENV PORT 3000
 EXPOSE 3000
@@ -7,18 +7,22 @@ EXPOSE 3000
 RUN mkdir /app
 WORKDIR /app
 
-RUN npm install --global pm2
+# RUN npm install --global pm2
 
 # Installing dependencies
-ADD package.json yarn.lock /app/
-RUN yarn --pure-lockfile --production
+COPY package.json  /app/
+# RUN yarn --pure-lockfile --production
+RUN yarn
 
 # Copying source files
-ADD . /app
+COPY . /app
 
 RUN yarn build
 
-USER node
+# RUN chmod -R 777 .
+
+# USER node
 
 # Running the app
-CMD [ "pm2-runtime", "npm", "--", "start" ]
+# CMD [ "pm2-runtime", "npm", "--", "start" ]
+CMD yarn run dev

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { facilitaApi, localApi } from "../../../services/api";
+import { facilitaApi, localApiRemote } from "../../../services/api";
 import {
   Table,
   TableBody,
@@ -53,7 +53,7 @@ const ConLeadRecepcionista = (props) => {
       setSelectedProdutos([]);
       return;
     }
-    const { data } = await localApi.get("/leads", {
+    const { data } = await localApiRemote.get("/leads", {
       local: temp,
       produto: "null",
     });
@@ -96,9 +96,12 @@ const ConLeadRecepcionista = (props) => {
         cliente: item.cliente._id,
       }));
 
-    const { ok, originalError } = await localApi.patch("/leads/updateMany", {
-      data: temp,
-    });
+    const { ok, originalError } = await localApiRemote.patch(
+      "/leads/updateMany",
+      {
+        data: temp,
+      }
+    );
 
     if (!ok) {
       alert(originalError.message);
@@ -129,6 +132,23 @@ const ConLeadRecepcionista = (props) => {
       );
       if (!facilitaOk) {
         alert(originalError?.message);
+        return;
+      }
+      const salesforceData = {
+        produto: selectedProdutos
+          .map((i) => JSON.parse(i))
+          .find((i) => i.id_facilita === item.empreendimento).nome,
+        nome: item.nome,
+        email: item.email,
+        telefone: item.telefone,
+        stand: translateLocal[props.local],
+      };
+      const salesforceApiReq = await localApiRemote.post(
+        "/leads/salesforce",
+        salesforceData
+      );
+      if (!salesforceApiReq.ok) {
+        alert(salesforceApiReq.originalError?.message);
         return;
       }
     });
@@ -230,7 +250,7 @@ const ConLeadRecepcionista = (props) => {
             </TableBody>
           </Table>
         )}
-        {leads.length === 0 && (
+        {leads && leads.length === 0 && (
           <div>
             <Typography
               variant="h5"

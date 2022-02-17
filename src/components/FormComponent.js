@@ -8,9 +8,11 @@ import {
   Button,
   CircularProgress,
   NoSsr,
+  Box,
 } from "@material-ui/core";
 import styled, { useTheme } from "styled-components";
 import MuiPhoneNumber from "./PhoneInput";
+import useWindowSize from "../hooks/useWindowSize";
 
 const FormComponent = ({
   fields,
@@ -23,21 +25,30 @@ const FormComponent = ({
   formId,
 }) => {
   const theme = useTheme();
-  console.log(theme);
+  const size = useWindowSize();
+
   return (
     <Form
       id={formId || "form"}
       onSubmit={onSubmit}
+      width={width}
       style={{
-        width: `${width}%`,
+        // width: `${width}%`,
         backgroundColor: "white",
         borderRadius: "8px",
+        // padding: 25,
+        // ...(size.width <= 480 && { paddingLeft: 25, paddingRight: 25 }),
         padding: 25,
+        // paddingBottom: 25,
       }}
     >
       {fields.map(
         ({ name, placeholder, type, label, options, required }, index) => (
-          <ItemWrapper key={index} type={type}>
+          <ItemWrapper
+            key={name + index}
+            type={type}
+            style={{ maxWidth: "84vw" }}
+          >
             {type === "select" ? (
               <FormControl sx={{ m: 1, minWidth: 120 }}>
                 <InputLabel id={name}>{label}</InputLabel>
@@ -50,9 +61,10 @@ const FormComponent = ({
                   onChange={(e) => {
                     let temp = { ...state };
                     temp[name] = e.target.value;
-                    setState(temp);
+                    setState({ ...temp });
                   }}
                   variant="standard"
+                  size="small"
                 >
                   <MenuItem selected value>
                     {placeholder}
@@ -114,6 +126,7 @@ const FormComponent = ({
         value="Ativar"
         color="primary"
         disabled={loading}
+        style={{ width: "100%" }}
       >
         {loading && <CircularProgress size="22px" color="white" />}
         {!loading && buttonText}
@@ -127,9 +140,22 @@ FormComponent.defaultProps = {
 };
 
 const Form = styled.form`
-  display: grid;
-  width: 100%;
-`;
+    display: grid;
+    width: ${(props) => props.width}%;
+
+    @media (max-width: 480px) {
+      width: 80%;
+    }
+
+    @media (max-width: 625px) {
+      width: 90%;
+    }
+
+    @media (max-width: 900px) {
+      width: 100%;
+    }
+  `;
+
 const ItemWrapper = styled.div`
   display: flex;
   flex-direction: column;

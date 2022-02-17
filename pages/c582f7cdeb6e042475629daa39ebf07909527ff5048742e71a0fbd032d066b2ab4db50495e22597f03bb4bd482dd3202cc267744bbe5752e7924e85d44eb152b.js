@@ -4,7 +4,7 @@
 import styled from "styled-components";
 import Typography from "@material-ui/core/Typography";
 import { AcaoCadastro, AcaoConsulta } from "../src/components/index";
-import { localApi } from "../src/services/api";
+import { localApi, getServerSidePropsApi } from "../src/services/api";
 import Head from "next/head";
 
 const Acao = (props) => {
@@ -31,7 +31,7 @@ const Acao = (props) => {
 };
 
 export async function getServerSideProps() {
-  const { data, ok } = await localApi.get("/acao");
+  const { data, ok } = await getServerSidePropsApi.get("/acao");
 
   if (!ok) {
     return {
@@ -58,11 +58,11 @@ const Wrapper = styled.div`
   justify-content: center;
 `;
 const GridWrapper = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  align-items: baseline;
 
   @media screen and (max-width: 600px) {
-    grid-template-columns: 1fr;
+    flex-wrap: wrap;
   }
 `;
 

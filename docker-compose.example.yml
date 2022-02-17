@@ -10,7 +10,7 @@ services:
       - nodemodules:/app/node_modules
       - build:/app/.next
     ports:
-      - "3000:3000"
+      - "1359:3000"
 volumes:
   build: {}
   nodemodules: {}

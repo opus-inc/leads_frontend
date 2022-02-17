@@ -3,7 +3,11 @@
  */
 /* eslint-disable no-unreachable */
 import { useState } from "react";
-import { localApi } from "../src/services/api";
+import {
+  localApi,
+  localApiRemote,
+  getServerSidePropsApi,
+} from "../src/services/api";
 import {
   Table,
   TableBody,
@@ -82,7 +86,7 @@ const ConEmpreendimentos = (props) => {
       });
     }
 
-    const { ok, originalError } = await localApi.patch(
+    const { ok, originalError } = await localApiRemote.patch(
       "/empreendimentos/updateMany",
       {
         data: req,
@@ -101,7 +105,9 @@ const ConEmpreendimentos = (props) => {
   };
 
   const updateEmpreendimentos = async () => {
-    const { data, ok, originalError } = await localApi.get("/empreendimentos");
+    const { data, ok, originalError } = await localApiRemote.get(
+      "/empreendimentos"
+    );
 
     if (!ok) {
       alert(originalError.message);
@@ -213,7 +219,7 @@ const ConEmpreendimentos = (props) => {
 };
 
 export async function getServerSideProps() {
-  const { data, ok } = await localApi.get("/empreendimentos");
+  const { data, ok } = await getServerSidePropsApi.get("/empreendimentos");
 
   if (!ok) {
     return {

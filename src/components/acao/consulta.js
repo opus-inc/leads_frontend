@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { localApi } from "../../services/api";
+import { localApiRemote } from "../../services/api";
 import {
   Table,
   TableBody,
@@ -55,9 +55,12 @@ const ConAcoes = (props) => {
       return;
     }
 
-    const { ok, originalError } = await localApi.patch("/acao/updateMany", {
-      data: req,
-    });
+    const { ok, originalError } = await localApiRemote.patch(
+      "/acao/updateMany",
+      {
+        data: req,
+      }
+    );
 
     if (!ok) {
       alert(originalError.message);
@@ -71,7 +74,7 @@ const ConAcoes = (props) => {
   };
 
   const updateAcoes = async () => {
-    const { data, ok, originalError } = await localApi.get("/acao", {
+    const { data, ok, originalError } = await localApiRemote.get("/acao", {
       status: "Ativo",
     });
 

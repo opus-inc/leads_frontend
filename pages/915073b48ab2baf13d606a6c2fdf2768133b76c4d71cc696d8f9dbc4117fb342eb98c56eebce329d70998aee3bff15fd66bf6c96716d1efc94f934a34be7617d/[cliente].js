@@ -2,12 +2,13 @@ import Head from "next/head";
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { FormComponent } from "../../src/components/index";
-import { localApi } from "../../src/services/api";
+import { localApiRemote } from "../../src/services/api";
 import Typography from "@material-ui/core/Typography";
 import translateLocal from "../../src/helpers/translateLocal";
 import { useRouter } from "next/router";
+import appendRdScript from "../../src/helpers/appendRdScript";
 
-const CadLeadStand = () => {
+const CadLeadStand = (props) => {
   const router = useRouter();
   const { cliente } = router.query;
   const [form, setForm] = useState({
@@ -42,13 +43,14 @@ const CadLeadStand = () => {
   ];
   useEffect(() => {
     document.title = "Cadastro Único";
+    // appendRdScript();
   }, []);
   const onSubmit = async (e) => {
     e.preventDefault();
     let telefone = form.telefone.match(/\d+/g).join("");
 
     setLoading(true);
-    const { ok, originalError } = await localApi.post("/leads", {
+    const { ok, originalError } = await localApiRemote.post("/leads", {
       ...form,
       local: translateLocal[cliente], //
       tipo: "Cliente",
@@ -61,11 +63,11 @@ const CadLeadStand = () => {
       return;
     }
 
-    let temp = {
-      ...form,
-      telefone: telefone,
-    };
-    await localApi.post("/leads/salesforce", temp);
+    // let temp = {
+    //   ...form,
+    //   telefone: telefone,
+    // };
+    // await localApiRemote.post("/leads/salesforce", temp);
 
     alert("Registro criado com sucesso!");
     temp = document.createElement("a");
@@ -91,7 +93,7 @@ const CadLeadStand = () => {
         formId="form-cliente  -cadastro"
         fields={campos}
         onSubmit={onSubmit}
-        width={50}
+        width={90}
         state={form}
         setState={setForm}
         buttonText="Cadastrar"
@@ -104,7 +106,7 @@ const CadLeadStand = () => {
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  margin-top: 16vh;
   align-items: center;
   justify-content: center;
 `;

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Typography, Button } from "@material-ui/core";
 import Head from "next/head";
@@ -8,14 +8,18 @@ import {
   RecepcionistaBusca,
 } from "../../src/components/index";
 import translateLocal from "../../src/helpers/translateLocal";
-import { localApi } from "../../src/services/api";
+import { getServerSidePropsApi, localApi } from "../../src/services/api";
 import { useRouter } from "next/router";
+import appendRdScript from "../../src/helpers/appendRdScript";
 
 const Recepcionista = (props) => {
   const router = useRouter();
   const [consultar, setConsultar] = useState(false);
   const [leads, setLeads] = useState(null);
   const { recepcionista } = router.query;
+
+  useEffect(() => appendRdScript(), []);
+
   return (
     <>
       <Head>
@@ -88,10 +92,14 @@ const Recepcionista = (props) => {
 
 export async function getServerSideProps({ query: { recepcionista } }) {
   console.log(translateLocal[recepcionista]);
-  const { data: empreendimentos, ok: empreendimentosOk } = await localApi.get(
-    "/empreendimentos",
-    { status: "Ativo" }
-  );
+  // const data = await localApi.get("/empreendimentos", { status: "Ativo" });
+  const {
+    data: empreendimentos,
+    ok: empreendimentosOk,
+    originalError: empreendimentosOriginalError,
+  } = await getServerSidePropsApi.get("/empreendimentos", { status: "Ativo" });
+
+  console.log(empreendimentosOriginalError);
 
   if (!empreendimentosOk) {
     return {
@@ -111,10 +119,13 @@ export async function getServerSideProps({ query: { recepcionista } }) {
     };
   }
 
-  const { data: leads, ok: leadsOk } = await localApi.get("/leads", {
-    local: translateLocal[recepcionista],
-    produto: "null",
-  });
+  const { data: leads, ok: leadsOk } = await getServerSidePropsApi.get(
+    "/leads",
+    {
+      local: translateLocal[recepcionista],
+      produto: "null",
+    }
+  );
 
   if (!leadsOk) {
     return {

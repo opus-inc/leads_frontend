@@ -1,6 +1,8 @@
 {
   "name": "leads_web",
   "version": "1.0.0",
+  "license": "UNLICENSED",
+  "private": true,
   "dependencies": {
     "@material-ui/core": "latest",
     "apisauce": "^2.1.1",

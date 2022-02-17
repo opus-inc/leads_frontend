@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { FormComponent } from "../index";
-import { localApi } from "../../services/api";
+import { localApiRemote } from "../../services/api";
 import Typography from "@material-ui/core/Typography";
 
 const CadAcoes = () => {
@@ -31,41 +31,23 @@ const CadAcoes = () => {
       type: "select",
       required: true,
       options: [
-        {
-          name: "Opus Vendas",
-          value: "Opus Vendas",
-        },
-        {
-          name: "Adão Vida Nova",
-          value: "Adão Vida Nova",
-        },
-        {
-          name: "Adão Talent",
-          value: "Adão Talent",
-        },
-        {
-          name: "Adão Imóveis",
-          value: "Adão Imóveis",
-        },
-        {
-          name: "Adão Imóveis",
-          value: "Adão Imóveis",
-        },
-        {
-          name: "Adão Intense",
-          value: "Adão Intense",
-        },
-        {
-          name: "URBS",
-          value: "URBS",
-        },
+        { name: "Opus Vendas", value: "Opus Vendas" },
+        { name: "Adão", value: "Adão" },
+        { name: "Adão Vida Nova", value: "Adão Vida Nova" },
+        { name: "Adão Talent", value: "Adão Talent" },
+        { name: "My Broker", value: "My Broker" },
+        { name: "Urbs Connect", value: "Urbs Connect" },
+        { name: "Urbs One", value: "Urbs One" },
+        { name: "R8", value: "R8" },
+        { name: "Nii3", value: "Nii3" },
+        { name: "Vallus", value: "Vallus" },
       ],
     },
   ];
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    const { ok, originalError } = await localApi.post("/acao", {
+    const { ok, originalError } = await localApiRemote.post("/acao", {
       ...form,
       nome: `Ação - ${form.equipe} - ${form.nome}`,
       status: "Ativo",
