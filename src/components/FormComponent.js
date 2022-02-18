@@ -44,11 +44,7 @@ const FormComponent = ({
     >
       {fields.map(
         ({ name, placeholder, type, label, options, required }, index) => (
-          <ItemWrapper
-            key={name + index}
-            type={type}
-            style={{ maxWidth: "84vw" }}
-          >
+          <ItemWrapper key={name + index} type={type}>
             {type === "select" ? (
               <FormControl sx={{ m: 1, minWidth: 120 }}>
                 <InputLabel id={name}>{label}</InputLabel>
@@ -115,6 +111,11 @@ const FormComponent = ({
                   marginBottom: 6,
                 }}
                 variant="standard"
+                {...((type === "date" ||
+                  type === "datetime" ||
+                  type === "datetime-local") && {
+                  InputLabelProps: { shrink: true },
+                })}
               />
             )}
           </ItemWrapper>
@@ -140,21 +141,21 @@ FormComponent.defaultProps = {
 };
 
 const Form = styled.form`
-    display: grid;
-    width: ${(props) => props.width}%;
+  display: grid;
+  width: ${(props) => props.width}%;
 
-    @media (max-width: 480px) {
-      width: 80%;
-    }
+  @media (max-width: 480px) {
+    width: 80%;
+  }
 
-    @media (max-width: 625px) {
-      width: 90%;
-    }
+  @media (max-width: 625px) {
+    width: 90%;
+  }
 
-    @media (max-width: 900px) {
-      width: 100%;
-    }
-  `;
+  @media (max-width: 900px) {
+    width: 100%;
+  }
+`;
 
 const ItemWrapper = styled.div`
   display: flex;
