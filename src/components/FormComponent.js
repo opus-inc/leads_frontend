@@ -13,6 +13,7 @@ import {
 import styled, { useTheme } from "styled-components";
 import MuiPhoneNumber from "./PhoneInput";
 import useWindowSize from "../hooks/useWindowSize";
+import { cpfMask } from "../helpers/cpfMask";
 
 const FormComponent = ({
   fields,
@@ -43,7 +44,10 @@ const FormComponent = ({
       }}
     >
       {fields.map(
-        ({ name, placeholder, type, label, options, required }, index) => (
+        (
+          { name, placeholder, type, label, options, required, disabled },
+          index
+        ) => (
           <ItemWrapper key={name + index} type={type}>
             {type === "select" ? (
               <FormControl sx={{ m: 1, minWidth: 120 }}>
@@ -61,6 +65,7 @@ const FormComponent = ({
                   }}
                   variant="standard"
                   size="small"
+                  disabled={disabled}
                 >
                   <MenuItem selected value>
                     {placeholder}
@@ -85,6 +90,7 @@ const FormComponent = ({
                   label={label}
                   placeholder={placeholder}
                   required={required}
+                  disabled={disabled}
                   value={state[name]}
                   onChange={(e) => {
                     let temp = { ...state };
@@ -94,6 +100,30 @@ const FormComponent = ({
                   variant="standard"
                 />
               </NoSsr>
+            ) : type === "cpf" ? (
+              <TextField
+                id={name}
+                type={type}
+                label={label}
+                placeholder={placeholder}
+                required={required}
+                disabled={disabled}
+                value={state[name]}
+                onChange={(e) => {
+                  let temp = { ...state };
+                  temp[name] = cpfMask(e.target.value);
+                  setState(temp);
+                }}
+                style={{
+                  marginBottom: 6,
+                }}
+                variant="standard"
+                {...((type === "date" ||
+                  type === "datetime" ||
+                  type === "datetime-local") && {
+                  InputLabelProps: { shrink: true },
+                })}
+              />
             ) : (
               <TextField
                 id={name}
@@ -101,6 +131,7 @@ const FormComponent = ({
                 label={label}
                 placeholder={placeholder}
                 required={required}
+                disabled={disabled}
                 value={state[name]}
                 onChange={(e) => {
                   let temp = { ...state };
@@ -121,17 +152,19 @@ const FormComponent = ({
           </ItemWrapper>
         )
       )}
-      <Button
-        type="submit"
-        variant="contained"
-        value="Ativar"
-        color="primary"
-        disabled={loading}
-        style={{ width: "100%" }}
-      >
-        {loading && <CircularProgress size="22px" color="white" />}
-        {!loading && buttonText}
-      </Button>
+      {buttonText && (
+        <Button
+          type="submit"
+          variant="contained"
+          value="Ativar"
+          color="primary"
+          disabled={loading}
+          style={{ width: "100%" }}
+        >
+          {loading && <CircularProgress size="22px" color="white" />}
+          {!loading && buttonText}
+        </Button>
+      )}
     </Form>
   );
 };

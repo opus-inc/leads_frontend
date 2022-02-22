@@ -1,7 +1,9 @@
-.git/
+.git
 .gitignore
-.next/
+.next
 .dockerignore
 Dockerfile
 docker-compose.yml
-node_modules/
+node_modules
+yarn.lock
+yarn-error.log
