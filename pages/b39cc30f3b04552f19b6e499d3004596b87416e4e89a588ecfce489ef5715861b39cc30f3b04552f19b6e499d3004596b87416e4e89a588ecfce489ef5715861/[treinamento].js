@@ -16,6 +16,8 @@ import {
   Radio,
   RadioGroup,
   CircularProgress,
+  Typography,
+  TextField,
 } from "@material-ui/core";
 import FormComponent from "../../src/components/FormComponent";
 import Head from "next/head";
@@ -28,18 +30,20 @@ const perguntas = [
   "5. Decorado: De 1 a 5, qual a nota você classifica o decorado que visitou?",
 ];
 
-const CadTreinamentos = ({ treinamentos }) => {
+const CadTreinamentos = ({ treinamentos, originalTreinamentos }) => {
   const {
     query: { treinamento },
   } = useRouter();
   const [loading, setLoading] = useState(false);
   const [respostas, setRespostas] = useState([]);
+  // const [obs, setObs] = useState("");
   const [form, setForm] = useState({
     cpf: "",
     treinamento: treinamento,
     corretor: "",
     telefone: "",
     email: "",
+    obs: "",
   });
 
   const campos = [
@@ -143,6 +147,21 @@ const CadTreinamentos = ({ treinamentos }) => {
     );
   };
 
+  if (
+    new Date(
+      originalTreinamentos.find((t) => t.id === treinamento).data
+    ).getUTCDate() !== new Date().getUTCDate()
+  ) {
+    console.log(originalTreinamentos.find((t) => t.id === treinamento).data);
+    console.log(new Date().getUTCDate());
+    return (
+      <Wrapper>
+        <Typography style={{ margin: 24 }}>
+          Treinamento não disponível
+        </Typography>
+      </Wrapper>
+    );
+  }
   return (
     <Wrapper>
       <Head>
@@ -161,7 +180,7 @@ const CadTreinamentos = ({ treinamentos }) => {
       />
       <StyledBox
         style={{
-          padding: "0px 25px 25px 25px",
+          padding: "0px 25px 0px 25px",
         }}
       >
         <Box
@@ -172,7 +191,7 @@ const CadTreinamentos = ({ treinamentos }) => {
           }}
         >
           {perguntas.map((pergunta, index) => (
-            <FormControl component="fieldset" style={{ margin: 16 }}>
+            <FormControl component="fieldset" style={{ margin: "16px 0" }}>
               <FormLabel component="legend">{pergunta}</FormLabel>
               <RadioGroup
                 aria-label={pergunta}
@@ -192,6 +211,30 @@ const CadTreinamentos = ({ treinamentos }) => {
             </FormControl>
           ))}
         </Box>
+      </StyledBox>
+      <FormComponent
+        formId="form-cadastro-treinamento"
+        fields={[
+          {
+            placeholder: "Deseja fazer algum comentário?",
+            label: "Deseja fazer algum comentário?",
+            name: "obs",
+            type: "text",
+            required: false,
+            options: {
+              multiline: true,
+            },
+          },
+        ]}
+        // onSubmit={onSubmit}
+        //width={getWidth(width)}
+        width={80}
+        state={form}
+        setState={setForm}
+        // buttonText="Cadastrar"
+        loading={loading}
+      />
+      <StyledBox>
         <Button
           type="submit"
           variant="contained"
@@ -229,6 +272,7 @@ export async function getServerSideProps() {
 
   return {
     props: {
+      originalTreinamentos: data,
       treinamentos: optionsTreinamentos,
     },
   };
@@ -254,10 +298,6 @@ const StyledBox = styled(Box)`
 
     @media (max-width: 625px) {
       width: 90%;
-    }
-
-    @media (max-width: 900px) {
-      width: 100%;
     }
   }
 `;

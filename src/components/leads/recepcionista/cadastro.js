@@ -15,6 +15,7 @@ const CadLeadStand = (props) => {
     email: "",
     telefone: "",
     empreendimento: "",
+    cpf: "",
   });
 
   useEffect(async () => {
@@ -47,6 +48,13 @@ const CadLeadStand = (props) => {
         required: true,
       },
       {
+        placeholder: "Insira o seu CPF",
+        label: "CPF ",
+        name: "cpf",
+        type: "cpf",
+        required: false,
+      },
+      {
         placeholder: "Selecione o produto",
         label: "Produto ",
         name: "empreendimento",
@@ -76,7 +84,7 @@ const CadLeadStand = (props) => {
       ...form,
       produto: id,
       local: translateLocal[props.local],
-      tipo: "Stand",
+      tipo: "Stand de Vendas",
       telefone: telefone,
     };
 
@@ -100,6 +108,7 @@ const CadLeadStand = (props) => {
       produto: nome,
       telefone: telefone,
       stand: translateLocal[props.local],
+      data_visita: new Date(),
     };
 
     delete temp.empreendimento;
@@ -118,6 +127,7 @@ const CadLeadStand = (props) => {
       email: "",
       telefone: "",
       empreendimento: "",
+      cpf: "",
     });
     setLoading(false);
   };

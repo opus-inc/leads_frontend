@@ -22,6 +22,7 @@ const CadTreinamentos = ({ empreendimentos }) => {
     nome: "",
     data: "",
     empreendimento: "",
+    ministrante: "",
   });
 
   const campos = [
@@ -37,6 +38,20 @@ const CadTreinamentos = ({ empreendimentos }) => {
       label: "Data ",
       name: "data",
       type: "datetime-local",
+      required: true,
+    },
+    {
+      placeholder: "Insira o ministrante do treinamento",
+      label: "Ministrante ",
+      name: "ministrante",
+      type: "text",
+      required: true,
+    },
+    {
+      placeholder: "Insira o local do treinamento",
+      label: "Local ",
+      name: "local",
+      type: "text",
       required: true,
     },
     {

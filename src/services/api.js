@@ -17,13 +17,21 @@ const getServerSidePropsApi = create({
 
 const facilitaApi = create({
   baseURL: "https://opus.api.facilitavendas.com/public/",
-  headers: { Accept: "*/*" },
+  headers: {
+    Accept: "*/*",
+    "Access-Control-Allow-Origin": "*"
+  },
 });
 
 const flaskApi = create({
   baseURL: "https://app02.opus.inc/leads/api/find-lead-excel",
-  headers: { Accept: "*/*" },
+  headers: { "Content-Type": "application/json" },
 });
+
+const adaoApi = create({
+  baseURL: "https://api.adaoimoveis.com.br/int",
+  headers: { Accept: "*/*" },
+})
 
 export {
   localApi,
@@ -31,4 +39,5 @@ export {
   flaskApi,
   localApiRemote,
   getServerSidePropsApi,
+  adaoApi,
 };

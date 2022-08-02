@@ -9,13 +9,28 @@ import {
   Button,
   Checkbox,
   Typography,
+  Icon,
+  makeStyles,
+  IconButton
 } from "@material-ui/core";
 import styled from "styled-components";
+import { useRouter } from "next/router";
+
+const useStyles = makeStyles({
+  imageIcon: {
+    height: '100%'
+  },
+  iconRoot: {
+    textAlign: 'center'
+  }
+});
 
 const ConAcoes = (props) => {
+  const router = useRouter();
   const [acoes, setAcoes] = useState(props.acoes);
   const [checkbox, setCheckbox] = useState([]);
   // eslint-disable-next-line no-unused-vars
+  const classes = useStyles();  
 
   const handleCheckbox = (item, value, index) => {
     let temp = [...checkbox];
@@ -99,6 +114,7 @@ const ConAcoes = (props) => {
               <TableCell>Nome</TableCell>
               <TableCell>Equipe</TableCell>
               <TableCell>Valor</TableCell>
+              <TableCell>QR Code</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -119,6 +135,13 @@ const ConAcoes = (props) => {
                   <TableCell>{item.nome}</TableCell>
                   <TableCell>{item.equipe}</TableCell>
                   <TableCell>{formatMoney(item.valor)}</TableCell>
+                  <TableCell>{item.acao_cliente ? (
+                    <IconButton aria-label="qr-code" onClick={() => router.push(`https://app02.opus.inc/738857258e/8128522378FDAEF7EF003239427A90F799E99D00BFF9CE44C3751AAEB52558D57AA628D76217E1D7E1F95B7E43A9B75F3FD5192985E8CB26EBB83A6B32AAABA7/${item.id}`)}>
+                      <Icon classes={{root: classes.iconRoot}}>
+                        <img className={classes.imageIcon} src="https://upload.wikimedia.org/wikipedia/commons/3/31/QR_icon.svg"/>
+                      </Icon>
+                    </IconButton>
+                  ) : <span style={{ textAlign: "center" }}> - </span>}</TableCell>
                 </TableRow>
               ))}
           </TableBody>
