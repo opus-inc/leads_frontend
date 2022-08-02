@@ -6,16 +6,11 @@ import Typography from "@material-ui/core/Typography";
 import { AcaoCadastro, AcaoConsulta } from "../src/components/index";
 import { localApi, getServerSidePropsApi } from "../src/services/api";
 import Head from "next/head";
-import { Fab } from "@material-ui/core";
-import AddIcon from '@material-ui/icons/Add';
 
 const Acao = (props) => {
   return (
     <Wrapper>
-      <Fab color="primary" aria-label="add">
-        <AddIcon />
-      </Fab>
-      {/* <Head>
+      <Head>
         <title>Cadastro Único - Cadastro Ação</title>
       </Head>
       <Typography
@@ -30,7 +25,7 @@ const Acao = (props) => {
       <GridWrapper>
         <AcaoCadastro empreendimentos={props.empreendimentos} />
         <AcaoConsulta acoes={props.acoes} />
-      </GridWrapper> */}
+      </GridWrapper>
     </Wrapper>
   );
 };

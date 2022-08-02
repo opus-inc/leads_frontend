@@ -1,32 +1,160 @@
 /*
  *  Ações
  */
+import * as React from "react";
 import styled from "styled-components";
 import Typography from "@material-ui/core/Typography";
 import { AcaoCadastro, AcaoConsulta } from "../src/components/index";
-import { localApi, getServerSidePropsApi } from "../src/services/api";
+import { localApi, getServerSidePropsApi, localApiRemote } from "../src/services/api";
 import Head from "next/head";
+import { Fab, Box } from "@material-ui/core";
+import AddIcon from '@material-ui/icons/Add';
+
+import { Snackbar, Alert, Modal } from "@mui/material"
 
 const Acao = (props) => {
+  const [isEditing, setIsEditing] = React.useState(true);
+  const [toast, setToast] = React.useState({
+    open: false,
+    message: '',
+    variant: '',
+    vertical: 'top',
+    horizontal: 'center',
+  });
+  const [openModal, setOpenModal] = React.useState(false);
+  const [currentAcao, setCurrentAcao] = React.useState();
+  const [acoes, setAcoes] = React.useState(props.acoes);
+  const [loading, setLoading] = React.useState(false);
+  
+  React.useEffect(() => {
+    setToast({
+      ...toast,
+      open: true,
+      message: 'Ao editar uma ação, esta será inativada automaticamente.',
+      variant: 'info'
+    });
+  }, []);
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setToast({
+      ...toast,
+      open: false,
+      // message: '',
+      // variant: ''
+    });
+  };
+
+  const handleOpenModal = (acao) => {
+    setCurrentAcao(acao);
+    setOpenModal(true);
+  }
+
+  const handleNewAcao = () => {
+    setIsEditing(false);
+    handleOpenModal()
+  }
+
+  const onSubmit = async (acao) => {
+    setLoading(true);
+    
+    if(isEditing) {
+      const { ok, originalError } = await localApiRemote.patch(`/acao/${acao.id}`, {
+        valor_real: acao.valor_real,
+        status: "Inativo",
+      });
+
+      if(!ok) {
+        setToast({
+          ...toast,
+          open: true,
+          message: originalError,
+          variant: 'error'
+        })
+        return;
+      }
+    } else {
+      const { ok, originalError } = await localApiRemote.post("/acao", {
+        ...acao,
+        nome: `Ação - ${acao.equipe} - ${acao.nome}`,
+        status: "Ativo",
+        acao_cliente: true
+      });
+
+      if(!ok) {
+        setToast({
+          ...toast,
+          open: true,
+          message: originalError,
+          variant: 'error'
+        })
+        return;
+      }
+    }
+    
+    const { data: acoes, ok: acoesOk } = await localApiRemote.get("/acao", { status: "Ativo" });
+
+    if(!acoesOk) {
+      setAcoes([]);
+      setToast({
+        ...toast,
+        open: true,
+        message: 'Erro ao buscar as ações',
+        variant: 'error'
+      })
+      return;
+    }
+
+    setAcoes([...acoes]);
+
+    setToast({
+      ...toast,
+      open: true,
+      message: isEditing ? 'Item editado com sucesso' : 'Item salvo com sucesso',
+      variant: 'success'
+    })
+
+    setLoading(false);
+    setOpenModal(false);
+    
+  }
+
   return (
-    <Wrapper>
-      <Head>
-        <title>Cadastro Único - Cadastro Ação</title>
+    <Box>
+       <Head>
+        <title>Cadastro Único - Ações</title>
       </Head>
-      <Typography
-        variant="h4"
-        component="div"
-        gutterBottom
-        color="#fff"
-        style={{ marginBottom: "80px" }}
+      <Modal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
       >
-        AÇÕES
-      </Typography>
-      <GridWrapper>
-        <AcaoCadastro empreendimentos={props.empreendimentos} />
-        <AcaoConsulta acoes={props.acoes} />
-      </GridWrapper>
-    </Wrapper>
+        <Box>
+          <AcaoCadastro empreendimentos={props.empreendimentos} acao={currentAcao} isEditing={isEditing} onSubmit={onSubmit}/>
+        </Box>
+      </Modal>
+      <Fab color="primary" aria-label="add" style={{
+          margin: 0,
+          top: 'auto',
+          right: 20,
+          bottom: 20,
+          left: 'auto',
+          position: 'fixed',
+      }} onClick={() => handleNewAcao()}>
+        <AddIcon />
+      </Fab>
+      <Snackbar open={toast.open} autoHideDuration={6000} onClose={handleClose} anchorOrigin={{ vertical: toast.vertical, horizontal: toast.horizontal }}>
+        <Alert onClose={handleClose} severity={toast.variant} sx={{ width: '100%' }}>
+          {toast.message}
+        </Alert>
+      </Snackbar>
+      <AcaoConsulta acoes={acoes} loading={loading} handleEdit={(acao) => {
+        setIsEditing(true);
+        handleOpenModal(acao);
+      }}/>
+    </Box>
   );
 };
 

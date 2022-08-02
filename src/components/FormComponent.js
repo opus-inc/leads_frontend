@@ -17,6 +17,7 @@ import styled, { useTheme } from "styled-components";
 import MuiPhoneNumber from "./PhoneInput";
 import useWindowSize from "../hooks/useWindowSize";
 import { cpfMask } from "../helpers/cpfMask";
+import { Autocomplete } from "@mui/material";
 
 const FieldItemComponent = ({ state, setState, field, index }) => {
   const { name, placeholder, type, label, options, required, disabled, condition } = field;
@@ -58,6 +59,30 @@ const FieldItemComponent = ({ state, setState, field, index }) => {
               ))}
           </Select>
         </FormControl>
+      ) : type === "autocomplete" ? (
+        <Autocomplete
+          disablePortal
+          disabled={disabled}
+          id={`mui-autocomplete-${name}`}
+          options={options}
+          sx={{ minWidth: 120 }}
+          renderInput={(params) => <TextField {...params} label={label} />}
+          value={state[name]}
+          // renderOption={(option) => option.label}
+          getOptionLabel={(option) => {
+            console.log(option);
+            if(typeof option === "string") {
+              return options.find(opt => opt.id === option)?.label ?? ""
+            } else {
+              return option.label
+            }
+          }}
+          onChange={(e, newValue) => {
+            let temp = { ...state };
+            temp[name] = newValue.id;
+            setState({ ...temp });
+          }}
+        />
       ) : type === "tel" ? (
         <NoSsr>
           <MuiPhoneNumber

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { localApiRemote } from "../../services/api";
 import {
   Table,
@@ -15,6 +15,7 @@ import {
 } from "@material-ui/core";
 import styled from "styled-components";
 import { useRouter } from "next/router";
+import EditIcon from '@material-ui/icons/Edit';
 
 const useStyles = makeStyles({
   imageIcon: {
@@ -27,10 +28,14 @@ const useStyles = makeStyles({
 
 const ConAcoes = (props) => {
   const router = useRouter();
-  const [acoes, setAcoes] = useState(props.acoes);
+  const [acoes, setAcoes] = useState();
   const [checkbox, setCheckbox] = useState([]);
   // eslint-disable-next-line no-unused-vars
   const classes = useStyles();  
+
+  useEffect(() => {
+    setAcoes(props.acoes);
+  }, [props.acoes])
 
   const handleCheckbox = (item, value, index) => {
     let temp = [...checkbox];
@@ -103,9 +108,9 @@ const ConAcoes = (props) => {
 
   return (
     <Wrapper>
-      <Typography variant="h6" component="div" gutterBottom color="#fff">
+      {/* <Typography variant="h6" component="div" gutterBottom color="#fff">
         INATIVAR
-      </Typography>
+      </Typography> */}
       <form onSubmit={onSubmit}>
         <Table>
           <TableHead>
@@ -115,6 +120,7 @@ const ConAcoes = (props) => {
               <TableCell>Equipe</TableCell>
               <TableCell>Valor</TableCell>
               <TableCell>QR Code</TableCell>
+              <TableCell>Editar</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -142,6 +148,13 @@ const ConAcoes = (props) => {
                       </Icon>
                     </IconButton>
                   ) : <span style={{ textAlign: "center" }}> - </span>}</TableCell>
+                  <TableCell>
+                    <IconButton aria-label="edit" onClick={() => props.handleEdit(item)}>
+                      <Icon classes={{root: classes.iconRoot}}>
+                        <EditIcon />
+                      </Icon>
+                    </IconButton>
+                  </TableCell>
                 </TableRow>
               ))}
           </TableBody>

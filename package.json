@@ -4,7 +4,11 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "@emotion/react": "^11.10.0",
+    "@emotion/styled": "^11.10.0",
     "@material-ui/core": "latest",
+    "@material-ui/icons": "^4.11.3",
+    "@mui/material": "^5.9.3",
     "apisauce": "^2.1.1",
     "material-ui-phone-number": "^2.2.6",
     "next": "latest",
