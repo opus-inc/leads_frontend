@@ -24,9 +24,24 @@ const BuscaLeadRecepcionista = ({ leads, setLeads }) => {
   const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const response = await flaskApi.get("", {
-      email,
-    });
+
+    const response = await flaskApi.post("", { email });
+
+
+    // const url = "https://app02.opus.inc/leads/api/find-lead-excel";
+    // const options = {
+    //   method: "POST",
+    //   headers: {
+    //     Accept: "application/json",
+    //     "Content-Type": "application/json;charset=UTF-8",
+    //   },
+    //   body: JSON.stringify({
+    //     email
+    //   }),
+    // };
+    // const response = await fetch(url, options)
+
+    console.log(response);
 
     console.log("linha 31 busca.js" + response.data);
 

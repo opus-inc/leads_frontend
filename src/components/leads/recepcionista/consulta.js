@@ -13,6 +13,7 @@ import {
   InputLabel,
   Typography,
   TextField,
+  CircularProgress,
 } from "@material-ui/core";
 import translateLocal from "../../../helpers/translateLocal";
 
@@ -20,6 +21,7 @@ const ConLeadRecepcionista = (props) => {
   const [leads, setLeads] = useState(props.leads);
   const [selectedProdutos, setSelectedProdutos] = useState([]);
   const [tempProdutos, setTempProdutos] = useState([]);
+  const [loading, setLoading] = useState(false);
   const produtos = props.empreendimentos;
 
   useEffect(() => {
@@ -67,18 +69,19 @@ const ConLeadRecepcionista = (props) => {
     setSelectedProdutos(temp);
   };
 
-  const onSubmitForms = (e) => {
-    e.preventDefault();
-  };
+  // const onSubmitForms = (e) => {
+  //   e.preventDefault();
+  // };
 
   const onSubmitEdit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    const buttons = document.getElementsByClassName("btn-click");
-    console.log(buttons);
-    for (var i = 0; i < buttons.length; i++) {
-      buttons[i].click();
-    }
+    // const buttons = document.getElementsByClassName("btn-click");
+    // for (var i = 0; i < buttons.length; i++) {
+    //   // console.log(buttons[i]);
+    //   buttons[i].click();
+    // }
 
     if (selectedProdutos.filter(Boolean).length === 0) {
       alert("Pelo menos um registro deve ser atualizado");
@@ -95,19 +98,16 @@ const ConLeadRecepcionista = (props) => {
         produto: JSON.parse(item.produto).id,
         cliente: item.cliente._id,
       }));
-
-    const { ok, originalError } = await localApiRemote.patch(
-      "/leads/updateMany",
-      {
-        data: temp,
-      }
-    );
-
-    if (!ok) {
-      alert(originalError.message);
-      return;
-    }
-
+    //
+    const localResponse = localApiRemote.patch("/leads/updateMany", {
+      data: temp,
+    });
+    //
+    // if (!ok) {
+    //   alert(originalError.message);
+    //   return;
+    // }
+    //
     temp = leads.map((lead, index) => ({
       ...lead,
       empreendimento: selectedProdutos[index],
@@ -124,16 +124,17 @@ const ConLeadRecepcionista = (props) => {
         facilita_custom_url: "http://app.opus.inc",
         name: "Formulário Lead",
         origem: "Cliente",
+        createdAt: item.createdAt,
+        aceite: item.aceite,
+        cpf: item.cpf,
       }));
-    temp.forEach(async (item) => {
-      const { ok: facilitaOk, originalError } = await facilitaApi.post(
-        "/trackerform",
-        item
-      );
-      if (!facilitaOk) {
-        alert(originalError?.message);
-        return;
-      }
+    const responses = [];
+    temp.forEach((item) => {
+      const facilitaResponse = facilitaApi.post("/trackerform", item);
+      // if (!facilitaOk) {
+      //   alert(originalError?.message);
+      //   return;
+      // }
       const salesforceData = {
         produto: selectedProdutos
           .map((i) => JSON.parse(i))
@@ -142,20 +143,36 @@ const ConLeadRecepcionista = (props) => {
         email: item.email,
         telefone: item.telefone,
         stand: translateLocal[props.local],
+        data_visita: item.createdAt,
+        aceite: item.aceite,
+        tipo: "Stand de Vendas",
+        cpf: item.cpf,
       };
-      const salesforceApiReq = await localApiRemote.post(
+      const salesforceApiReq = localApiRemote.post(
         "/leads/salesforce",
         salesforceData
       );
-      if (!salesforceApiReq.ok) {
-        alert(salesforceApiReq.originalError?.message);
-        return;
-      }
+      responses.push(facilitaResponse, salesforceApiReq);
+      //
+      // if (!salesforceApiReq.ok) {
+      //   alert(salesforceApiReq.originalError?.message);
+      //   return;
+      // }
     });
-
-    alert("Cadastrado com sucesso.");
-    setLeads([]);
-    setSelectedProdutos([]);
+    //
+    Promise.all([...responses, localResponse])
+      .then(() => {
+        alert("Cadastrado com sucesso.");
+        setLeads([]);
+        setSelectedProdutos([]);
+        setLoading(false);
+      })
+      .catch((e) => {
+        console.log(e);
+        alert("Erro ao enviar os Leads");
+        setLoading(false);
+        return;
+      });
   };
 
   return (
@@ -225,10 +242,10 @@ const ConLeadRecepcionista = (props) => {
                       </Select>
                     </TableCell>
                     <TableCell>{formatDate(createdAt)}</TableCell>
-                    <form
+                    {/* <form
                       id="form-recepcionista-liberar"
                       style={{ display: "none" }}
-                      onSubmit={onSubmitForms}
+                      onSubmit={(e) => e.preventDefault()}
                     >
                       <TextField id={nome} name="nome" value={nome} />
                       <TextField id={email} name="email" value={email} />
@@ -243,7 +260,7 @@ const ConLeadRecepcionista = (props) => {
                         value={tempProdutos[index]?.nome}
                       />
                       <input className="btn-click" type="submit" />
-                    </form>
+                    </form> */}
                   </TableRow>
                 )
               )}
@@ -272,7 +289,8 @@ const ConLeadRecepcionista = (props) => {
             margin: "4px 4px 0px 4px",
           }}
         >
-          Enviar
+          {loading ? <CircularProgress size="22px" color="white" /> : "Enviar"}
+          {/* Enviar */}
         </Button>
         <Button
           color="primary"

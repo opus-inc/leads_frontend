@@ -2,20 +2,27 @@
  *  Treinamentos
  */
 /* eslint-disable no-unreachable */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { localApiRemote, getServerSidePropsApi } from "../src/services/api";
 
 import styled from "styled-components";
-import { Typography } from "@material-ui/core";
+import { Box, Typography } from "@material-ui/core";
 import FormComponent from "../src/components/FormComponent";
 import Head from "next/head";
+import QRCode from "react-qr-code";
+
+const errorMessage = {
+  409: "Este treinamento já existe",
+};
 
 const CadTreinamentos = ({ empreendimentos }) => {
   const [loading, setLoading] = useState(false);
+  const [qrcode, setQrcode] = useState();
   const [form, setForm] = useState({
     nome: "",
     data: "",
     empreendimento: "",
+    ministrante: "",
   });
 
   const campos = [
@@ -31,6 +38,20 @@ const CadTreinamentos = ({ empreendimentos }) => {
       label: "Data ",
       name: "data",
       type: "datetime-local",
+      required: true,
+    },
+    {
+      placeholder: "Insira o ministrante do treinamento",
+      label: "Ministrante ",
+      name: "ministrante",
+      type: "text",
+      required: true,
+    },
+    {
+      placeholder: "Insira o local do treinamento",
+      label: "Local ",
+      name: "local",
+      type: "text",
       required: true,
     },
     {
@@ -57,14 +78,52 @@ const CadTreinamentos = ({ empreendimentos }) => {
     const createTreinamentoReq = localApiRemote.post("/treinamentos", form);
 
     Promise.allSettled([salesforceReq, createTreinamentoReq]).then(
-      ([{ ok: salesforceOk }, { ok: createTreinamentoOk }]) => {
-        console.log(salesforceOk);
-        console.log(createTreinamentoOk);
+      ([
+        {
+          value: { ok: saleforceOk },
+        },
+        {
+          value: { ok: localApiOk, data: localApiData },
+        },
+      ]) => {
+        if (!localApiOk) {
+          alert(errorMessage[localApiData.code]);
+        }
 
+        if (localApiOk) {
+          alert("Treinamento criado!");
+          setQrcode(localApiData.id);
+        }
         setLoading(false);
       }
     );
   };
+
+  if (qrcode) {
+    return (
+      <>
+        <Head>
+          <title>Cadastro Único - QR Code</title>
+        </Head>
+        <Box
+          sx={{
+            display: "flex",
+            width: "100%",
+            alignItems: "center",
+            flexDirection: "column",
+          }}
+        >
+          <Typography style={{ margin: 24 }}>
+            Imprima este QR Code de visualização única do treinamento
+          </Typography>
+          <QRCode
+            size={280}
+            value={`https://app02.opus.inc/738857258e/b39cc30f3b04552f19b6e499d3004596b87416e4e89a588ecfce489ef5715861b39cc30f3b04552f19b6e499d3004596b87416e4e89a588ecfce489ef5715861/${qrcode}`}
+          />
+        </Box>
+      </>
+    );
+  }
 
   return (
     <Wrapper>

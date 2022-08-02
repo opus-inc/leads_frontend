@@ -12,9 +12,11 @@ const CadLeadStand = (props) => {
   const router = useRouter();
   const { cliente } = router.query;
   const [form, setForm] = useState({
+    cpf: "",
     nome: "",
     email: "",
     telefone: "",
+    aceite: true,
   });
   const [loading, setLoading] = useState(false);
 
@@ -34,10 +36,34 @@ const CadLeadStand = (props) => {
       required: true,
     },
     {
+      placeholder: "Insira o seu CPF",
+      label: "CPF ",
+      name: "cpf",
+      type: "cpf",
+      required: false,
+    },
+    {
       placeholder: "Insira o telefone do cliente",
       label: "Telefone ",
       name: "telefone",
       type: "tel",
+      required: true,
+    },
+    {
+      label: (
+        <>
+          Li e concordo com a{" "}
+          <a href="https://opus.inc/politica-de-privacidade" target="_blank">
+            Política de Privacidade da Opus
+          </a>
+          , que pode usar as informações aqui fornecidas por mim para entrar em
+          contato comigo, via e-mail, telefone ou whatsapp, para ações de
+          natureza comercial. Posso revogar meu consentimento a qualquer momento
+          enviando um e-mail para dpo@opus.inc
+        </>
+      ),
+      name: "aceite",
+      type: "radio",
       required: true,
     },
   ];
@@ -52,8 +78,9 @@ const CadLeadStand = (props) => {
     setLoading(true);
     const { ok, originalError } = await localApiRemote.post("/leads", {
       ...form,
+      aceite: form.aceite ? "Sim" : "Não",
       local: translateLocal[cliente], //
-      tipo: "Cliente",
+      tipo: "Stand de Vendas",
       telefone: telefone,
     });
     console.log(ok);
@@ -85,7 +112,7 @@ const CadLeadStand = (props) => {
         variant="h5"
         component="div"
         gutterBottom
-        style={{ marginBottom: "140px" }}
+        style={{ marginBottom: "5vh" }}
       >
         REALIZE SEU CADASTRO
       </Typography>
@@ -106,7 +133,7 @@ const CadLeadStand = (props) => {
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  margin-top: 16vh;
+  margin-top: 8vh;
   align-items: center;
   justify-content: center;
 `;

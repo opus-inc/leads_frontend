@@ -9,10 +9,152 @@ import {
   CircularProgress,
   NoSsr,
   Box,
+  FormControlLabel,
+  Switch,
+  Typography,
 } from "@material-ui/core";
 import styled, { useTheme } from "styled-components";
 import MuiPhoneNumber from "./PhoneInput";
 import useWindowSize from "../hooks/useWindowSize";
+import { cpfMask } from "../helpers/cpfMask";
+
+const FieldItemComponent = ({ state, setState, field, index }) => {
+  const { name, placeholder, type, label, options, required, disabled, condition } = field;
+  
+  if(condition) {
+    if(!condition()) {
+      return <></>
+    }
+  }
+
+  return (
+    <ItemWrapper key={name + index} type={type}>
+      {type === "select" ? (
+        <FormControl sx={{ m: 1, minWidth: 120 }}>
+          <InputLabel id={name}>{label}</InputLabel>
+          <Select
+            labelId={name}
+            id={`select-${name}`}
+            required={required}
+            value={state[name]}
+            label={label}
+            onChange={(e) => {
+              let temp = { ...state };
+              temp[name] = e.target.value;
+              setState({ ...temp });
+            }}
+            variant="standard"
+            size="small"
+            disabled={disabled}
+          >
+            <MenuItem selected value>
+              {placeholder}
+            </MenuItem>
+            {options &&
+              options.map(({ value, name }) => (
+                <MenuItem key={name} id={name} name={name} value={value}>
+                  {name}
+                </MenuItem>
+              ))}
+          </Select>
+        </FormControl>
+      ) : type === "tel" ? (
+        <NoSsr>
+          <MuiPhoneNumber
+            defaultCountry={"br"}
+            style={{
+              marginBottom: 6,
+            }}
+            id={name}
+            type={type}
+            label={label}
+            placeholder={placeholder}
+            required={required}
+            disabled={disabled}
+            value={state[name]}
+            onChange={(e) => {
+              let temp = { ...state };
+              temp[name] = e;
+              setState(temp);
+            }}
+            variant="standard"
+          />
+        </NoSsr>
+      ) : type === "cpf" ? (
+        <TextField
+          id={name}
+          type={type}
+          label={label}
+          placeholder={placeholder}
+          required={required}
+          disabled={disabled}
+          value={state[name]}
+          onChange={(e) => {
+            let temp = { ...state };
+            temp[name] = cpfMask(e.target.value);
+            setState(temp);
+          }}
+          style={{
+            marginBottom: 6,
+          }}
+          variant="standard"
+          {...((type === "date" ||
+            type === "datetime" ||
+            type === "datetime-local") && {
+            InputLabelProps: { shrink: true },
+          })}
+        />
+      ) : type === "radio" ? (
+        <FormControlLabel
+          control={
+            <Switch
+              checked={state[name]}
+              onChange={(e) => {
+                let temp = { ...state };
+                temp[name] = e.target.checked;
+                setState(temp);
+              }}
+              name={name}
+              id={name}
+              color="primary"
+              size="small"
+            />
+          }
+          label={
+            <Typography style={{ fontSize: "0.75rem" }}>
+              {label}
+            </Typography>
+          }
+        />
+      ) : (
+        <TextField
+          id={name}
+          type={type}
+          label={label}
+          placeholder={placeholder}
+          required={required}
+          disabled={disabled}
+          value={state[name]}
+          {...(options && { ...options })}
+          onChange={(e) => {
+            let temp = { ...state };
+            temp[name] = e.target.value;
+            setState(temp);
+          }}
+          style={{
+            marginBottom: 6,
+          }}
+          variant="standard"
+          {...((type === "date" ||
+            type === "datetime" ||
+            type === "datetime-local") && {
+            InputLabelProps: { shrink: true },
+          })}
+        />
+      )}
+    </ItemWrapper>
+  )
+}
 
 const FormComponent = ({
   fields,
@@ -43,95 +185,31 @@ const FormComponent = ({
       }}
     >
       {fields.map(
-        ({ name, placeholder, type, label, options, required }, index) => (
-          <ItemWrapper key={name + index} type={type}>
-            {type === "select" ? (
-              <FormControl sx={{ m: 1, minWidth: 120 }}>
-                <InputLabel id={name}>{label}</InputLabel>
-                <Select
-                  labelId={name}
-                  id={`select-${name}`}
-                  required={required}
-                  value={state[name]}
-                  label={label}
-                  onChange={(e) => {
-                    let temp = { ...state };
-                    temp[name] = e.target.value;
-                    setState({ ...temp });
-                  }}
-                  variant="standard"
-                  size="small"
-                >
-                  <MenuItem selected value>
-                    {placeholder}
-                  </MenuItem>
-                  {options &&
-                    options.map(({ value, name }) => (
-                      <MenuItem key={name} id={name} name={name} value={value}>
-                        {name}
-                      </MenuItem>
-                    ))}
-                </Select>
-              </FormControl>
-            ) : type === "tel" ? (
-              <NoSsr>
-                <MuiPhoneNumber
-                  defaultCountry={"br"}
-                  style={{
-                    marginBottom: 6,
-                  }}
-                  id={name}
-                  type={type}
-                  label={label}
-                  placeholder={placeholder}
-                  required={required}
-                  value={state[name]}
-                  onChange={(e) => {
-                    let temp = { ...state };
-                    temp[name] = e;
-                    setState(temp);
-                  }}
-                  variant="standard"
-                />
-              </NoSsr>
-            ) : (
-              <TextField
-                id={name}
-                type={type}
-                label={label}
-                placeholder={placeholder}
-                required={required}
-                value={state[name]}
-                onChange={(e) => {
-                  let temp = { ...state };
-                  temp[name] = e.target.value;
-                  setState(temp);
-                }}
-                style={{
-                  marginBottom: 6,
-                }}
-                variant="standard"
-                {...((type === "date" ||
-                  type === "datetime" ||
-                  type === "datetime-local") && {
-                  InputLabelProps: { shrink: true },
-                })}
-              />
-            )}
-          </ItemWrapper>
+        (
+          field,
+          index
+        ) => (
+          <FieldItemComponent 
+            state={state}
+            setState={setState}
+            field={field}
+            index={index}
+          />
         )
       )}
-      <Button
-        type="submit"
-        variant="contained"
-        value="Ativar"
-        color="primary"
-        disabled={loading}
-        style={{ width: "100%" }}
-      >
-        {loading && <CircularProgress size="22px" color="white" />}
-        {!loading && buttonText}
-      </Button>
+      {buttonText && (
+        <Button
+          type="submit"
+          variant="contained"
+          value="Ativar"
+          color="primary"
+          disabled={loading}
+          style={{ width: "100%" }}
+        >
+          {loading && <CircularProgress size="22px" color="white" />}
+          {!loading && buttonText}
+        </Button>
+      )}
     </Form>
   );
 };

@@ -3,13 +3,18 @@ import styled from "styled-components";
 import { FormComponent } from "../index";
 import { localApiRemote } from "../../services/api";
 import Typography from "@material-ui/core/Typography";
+import { useRouter } from 'next/router'
 
-const CadAcoes = () => {
+const CadAcoes = ({ empreendimentos }) => {
+  const router = useRouter();
   const [form, setForm] = useState({
     nome: "",
     valor: "",
     equipe: "",
+    acao_cliente: false,
+    produto: "",
   });
+
   const campos = [
     {
       placeholder: "Insira o nome da ação",
@@ -43,12 +48,31 @@ const CadAcoes = () => {
         { name: "Vallus", value: "Vallus" },
       ],
     },
+    {
+      placeholder: "Ação para o cliente?",
+      label: "Ação para o cliente?",
+      name: "acao_cliente",
+      type: "radio",
+    },
+    {
+      placeholder: "Produto",
+      label: "Produto ",
+      name: "produto",
+      type: "select",
+      options: empreendimentos.map(i => ({ name: i.nome, value: i.id })),
+      condition: () => form.acao_cliente
+    }
   ];
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    let temp = {...form};
+    if(!temp.acao_cliente) {
+      delete temp.produto;
+    }
+    
     const { ok, originalError } = await localApiRemote.post("/acao", {
-      ...form,
+      ...temp,
       nome: `Ação - ${form.equipe} - ${form.nome}`,
       status: "Ativo",
     });
@@ -59,6 +83,7 @@ const CadAcoes = () => {
 
     if (ok) {
       alert("Registro criado com sucesso.");
+      router.reload(window.location.pathname);
     }
   };
 

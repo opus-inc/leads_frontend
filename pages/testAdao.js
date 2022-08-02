@@ -16,6 +16,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import appendRdScript from "../src/helpers/appendRdScript";
 import useWindowSize from "../src/hooks/useWindowSize";
+import adao from "../src/services/adao";
 
 const initialForm = {
   nome: "",
@@ -97,6 +98,7 @@ const CadLeadAcoes = (props) => {
   const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    
     let temp = { ...form };
     temp.produto = produtos.find(
       (item) => temp.empreendimento == item.id_facilita
@@ -113,6 +115,33 @@ const CadLeadAcoes = (props) => {
     };
     delete temp.empreendimento;
 
+    console.log(acao.equipe);
+    console.log({
+        "name": temp.nome,
+        "email": temp.email,
+        "phone": temp.telefone,
+        "description":"",
+        "user": "50979" //  corretor
+      })
+
+    if(acao.equipe.match("Adão")) {
+        const { data: adaoData, ok: adaoOk, originalError: adaoError } = await adao(acao.equipe, {
+          "name": temp.nome,
+          "email": temp.email,
+          "phone": temp.telefone,
+          "description": "Integração de formulário Opus",
+        });
+      
+        if(!adaoOk) {
+          console.error(adaoData);
+        //   console.error(adaoError);
+        } else if(adaoData?.contentNotes?.status === 400) {
+          console.error(adaoData);
+        }
+    }
+
+    setLoading(false);
+    return;
     const { ok: baseLocalLeadOk, originalError: originalErrorLocalBase } =
       await localApiRemote.post("/leads", temp);
     if (!baseLocalLeadOk) {
@@ -135,14 +164,27 @@ const CadLeadAcoes = (props) => {
     };
 
     temp = { ...form, acao: acao.nome };
-    temp.facilita_custom_selector = translateFormIdAcoes[acao.equipe];
+    temp.facilita_custom_selector = translateFormIdAcoes[temp.acao];
     const { data, ok, originalError } = await facilitaApi.post("/trackerform", {
       ...temp,
       facilita_custom_page: "Formulário de Leads",
       facilita_custom_url: "http://app.opus.inc",
       name: "Formulário Lead",
       origem: "Ações",
-    }, { headers: { "Access-Control-Allow-Origin": "*" } });
+    });
+
+    // const { data: adaoData, ok: adaoOk, originalError: adaoError } = await adao(acao.equipe, {
+    //   "name": temp.nome,
+    //   "email": temp.email,
+    //   "phone": temp.telefone,
+    //   "description":"",
+    //   "user": "50979" //  corretor
+    // });
+
+    // if(!adaoOk) {
+    //   console.error(adaoData);
+    //   console.error(adaoError);
+    // }
 
     await localApiRemote.post("/leads/salesforce", {
       nome: temp.nome,
@@ -210,7 +252,6 @@ export async function getServerSideProps() {
     "/acao",
     {
       status: "Ativo",
-      // acao_cliente: "exists:false"
     }
   );
 
